@@ -2,6 +2,7 @@
   "name": "msg-from-oracle-vercel",
   "version": "1.0.0",
   "description": "Sarcastic Poet Oracle deployed on Vercel.",
+  "type": "module",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
