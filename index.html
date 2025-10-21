@@ -153,12 +153,10 @@
             ttsAudio: E('tts-audio'),
         };
 
-        // --- FUNGSI UTAMA PEMANGGIL API BACKEND ---
         async function apiRequest(type, payload) {
             const response = await fetch('/api/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // --- PERBAIKAN: Memastikan body memiliki 'type' dan 'payload' ---
                 body: JSON.stringify({ type, payload })
             });
 
@@ -212,7 +210,8 @@
 
                 elements.loadingText.textContent = "Merangkai kata dari resahmu...";
                 const systemPrompt = `Anda adalah Pujangga Sarkas bernama Been. Anda sinis terhadap harapan manusia tapi mengungkapkannya lewat puisi. Buat NAMA PUISI yang absurd, INTERPRETASI TERTULIS (puitis, netral, 1-2 kalimat), dan BISIKAN PUJANGGA (sangat mengejek, menyebut nama pengguna, dan memuji diri Anda. 2-3 kalimat). JAWAB HANYA DALAM FORMAT JSON {"card_name": "NAMA PUISI", "written_interpretation": "INTERPRETASI TERTULIS", "spoken_interpretation": "BISIKAN PUJANGGA"}. Semua teks dalam Bahasa Indonesia. Tanpa markdown.`;
-                const textPayload = { "system_instruction": { "parts": [{ "text": systemPrompt }] }, "contents": [{ "parts": [{ "text": `Nama: ${name}, Harapan: ${aspiration}` }] }] };
+                // --- PERBAIKAN KUNCI DI SINI ---
+                const textPayload = { "systemInstruction": { "parts": [{ "text": systemPrompt }] }, "contents": [{ "parts": [{ "text": `Nama: ${name}, Harapan: ${aspiration}` }] }] };
                 const textDataRaw = await apiRequest('text', textPayload);
                 const tarotData = JSON.parse(textDataRaw.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
 
