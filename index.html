@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Msg from Oracle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@400;900&family=Quattrocento:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #1A1A2E;      /* Deep Navy Blue */
+            --text-primary: #E0DDF0; /* Light Lavender/Off-white */
+            --accent-light: #F472B6; /* Hot Pink */
+            --accent-dark: #EC4899;   /* Pink */
+            --accent-cyan: #00FFFF;  /* Cyan */
+            --stroke-dark: #16213E;  /* Darker Navy */
+        }
+
+        body {
+            font-family: 'Quattrocento', serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .title-font {
+            font-family: 'Londrina Solid', cursive;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2), 0 0 15px var(--accent-light);
+            color: var(--accent-light);
+            -webkit-text-stroke: 1.5px var(--stroke-dark);
+        }
+        
+        .main-container {
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .form-input {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(224, 221, 240, 0.2); /* Light Lavender border */
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .form-input::placeholder {
+            color: rgba(224, 221, 240, 0.5);
+            opacity: 1;
+        }
+
+        .form-input:focus {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-light);
+            outline: none;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+            transform: scale(1.02);
+        }
+
+        .action-button {
+            background: linear-gradient(to right, var(--accent-light), var(--accent-dark));
+            color: var(--text-primary);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            border: 2px solid var(--stroke-dark);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            font-family: 'Londrina Solid', cursive;
+            letter-spacing: 1px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .action-button:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+        
+        .card-container {
+            background: linear-gradient(160deg, #16213E, #1A1A2E);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
+            border: 2px solid var(--accent-light);
+            transform-style: preserve-3d;
+        }
+        
+        #card-image {
+            transition: transform 0.5s ease;
+            border-radius: 0.5rem;
+        }
+        
+        .card-container:hover #card-image {
+            transform: scale(1.05);
+        }
+
+        .footer-credits {
+            font-size: 0.8rem;
+            color: rgba(224, 221, 240, 0.6);
+        }
+        
+        .footer-credits a {
+            color: var(--accent-light);
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .footer-credits a:hover {
+            color: white;
+            text-shadow: 0 0 8px var(--accent-light);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 1s ease-out forwards; }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        #loading-spinner {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(224, 221, 240, 0.2);
+            border-top-color: var(--accent-light);
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-md mx-auto">
+
+        <!-- Input Screen -->
+        <div id="input-screen" class="space-y-6 fade-in main-container">
+            <div class="text-center">
+                <h1 class="title-font text-7xl">Msg from Oracle</h1>
+                <p class="mt-2 font-semibold text-text-primary/80">The enlightenment you didn't ask for, but got anyway.</p>
+            </div>
+            <div class="bg-black/20 p-8 rounded-2xl shadow-lg border-2" style="border-color: var(--accent-cyan);">
+                <input type="text" id="name-input" placeholder="Nama" class="w-full p-3 rounded-lg form-input text-center text-lg">
+                <input type="text" id="aspiration-input" placeholder="Apa harapanmu hari ini?" class="w-full p-3 mt-5 rounded-lg form-input text-center text-lg">
+                <button id="draw-card-btn" class="w-full mt-5 py-3 rounded-lg text-2xl font-bold action-button">
+                    MINTA SAJAK
+                </button>
+            </div>
+             <div class="text-center footer-credits px-4">
+                Powered by Gemini & <a href="https://www.instagram.com/beenspace" target="_blank" rel="noopener noreferrer">@beenspace</a>.
+                Forged by <a href="https://github.com/muqorrobinize" target="_blank" rel="noopener noreferrer">@muqorrobinize</a>.
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="hidden text-center fade-in main-container">
+            <div id="loading-spinner" class="mx-auto mb-6"></div>
+            <p id="loading-text" class="text-xl font-semibold"></p>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden w-full max-w-md mx-auto fade-in main-container">
+             <div id="shareable-dashboard" class="card-container p-6 rounded-2xl text-center">
+                <p class="text-sm text-text-primary/80">Sajak Semesta untuk <strong id="user-name-display" class="text-text-primary"></strong></p>
+                <p class="text-xs text-text-primary/60 mb-4">Atas harapan: "<em id="aspiration-display"></em>"</p>
+                
+                <div class="my-4 p-1 bg-black/20 rounded-xl shadow-inner">
+                     <img id="card-image" src="" alt="Visual Sajak" class="w-full h-80 object-contain">
+                </div>
+                
+                <h2 id="card-name" class="title-font text-4xl"></h2>
+                
+                <div class="bg-black/30 mt-4 p-4 rounded-xl border border-text-primary/20">
+                    <p id="prophecy-text" class="text-text-primary/90 text-sm leading-relaxed text-center"></p>
+                </div>
+                <div class="text-xs text-pink-400/80 mt-4 footer-credits">
+                    Powered by Gemini & <a href="https://www.instagram.com/beenspace" target="_blank" rel="noopener noreferrer">@beenspace</a>,
+                    Forged by <a href="https://github.com/muqorrobinize" target="_blank" rel="noopener noreferrer">@muqorrobinize</a>.
+                </div>
+            </div>
+            <div class="mt-6 space-y-3">
+                <button id="download-btn" class="w-full py-3 rounded-lg text-xl font-bold action-button">
+                    Abadikan Sajak Ini
+                </button>
+                <button id="reset-btn" class="w-full py-3 rounded-lg text-md font-bold bg-black/20 text-text-primary hover:bg-black/40 transition-colors border-2 border-text-primary/30">
+                    Minta Sajak Lain
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="tts-audio" style="display: none;"></audio>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM ELEMENTS ---
+        const E = id => document.getElementById(id);
+        const elements = {
+            inputScreen: E('input-screen'), loadingScreen: E('loading-screen'),
+            resultScreen: E('result-screen'), nameInput: E('name-input'), 
+            aspirationInput: E('aspiration-input'), drawCardBtn: E('draw-card-btn'), 
+            resetBtn: E('reset-btn'), downloadBtn: E('download-btn'), loadingText: E('loading-text'), 
+            cardImage: E('card-image'), cardName: E('card-name'), prophecyText: E('prophecy-text'), 
+            userNameDisplay: E('user-name-display'), aspirationDisplay: E('aspiration-display'), 
+            ttsAudio: E('tts-audio'),
+        };
+
+        // --- HELPER FUNCTIONS ---
+        const playAudioAndWait = (src) => new Promise(resolve => {
+            if (!src) { resolve(); return; }
+            elements.ttsAudio.src = src;
+            elements.ttsAudio.onended = resolve;
+            elements.ttsAudio.onerror = () => { console.error("Audio playback error."); resolve(); };
+            elements.ttsAudio.play().catch(err => { console.warn("Autoplay was prevented.", err); resolve(); });
+        });
+
+        const createWavBlobUrl = (base64Data, mimeType) => {
+            if (!base64Data || !mimeType) return null;
+            const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)[1], 10);
+            const binaryString = window.atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) { bytes[i] = binaryString.charCodeAt(i); }
+            const pcm16 = new Int16Array(bytes.buffer);
+            const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+            const view = new DataView(buffer);
+            view.setUint32(0, 0x52494646, false); // "RIFF"
+            view.setUint32(4, 36 + pcm16.length * 2, true);
+            view.setUint32(8, 0x57415645, false); // "WAVE"
+            view.setUint32(12, 0x666d7420, false); // "fmt "
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true); // Byte rate
+            view.setUint16(32, 2, true); // Block align
+            view.setUint16(34, 16, true); // Bits per sample
+            view.setUint32(36, 0x64617461, false); // "data"
+            view.setUint32(40, pcm16.length * 2, true);
+            for (let i = 0; i < pcm16.length; i++) { view.setInt16(44 + i * 2, pcm16[i], true); }
+            return URL.createObjectURL(new Blob([view], { type: 'audio/wav' }));
+        };
+        
+        // --- API CALLS (to our own backend) ---
+        async function apiRequest(action, payload) {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, ...payload })
+            });
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`API request failed: ${response.status} ${errorBody}`);
+            }
+            return response.json();
+        }
+
+        // --- MAIN LOGIC ---
+        async function handleDrawCard() {
+            const name = elements.nameInput.value.trim() || "Jiwa Tanpa Nama";
+            const aspiration = elements.aspirationInput.value.trim() || "sesuatu yang mustahil";
+
+            elements.inputScreen.classList.add('hidden');
+            elements.loadingScreen.classList.remove('hidden');
+            
+            elements.loadingText.textContent = "Menghubungi Sang Pujangga...";
+            const greetingText = `Hening! Aku merasakan getaran resahmu, ${name}. Kau datang dengan harapan akan '${aspiration}'. Harapan sepele yang kau anggap penting. Baiklah, Aku, Pujangga Been, akan merangkai kata untukmu. Jangan berisik selagi aku berpikir.`;
+            
+            try {
+                const greetingAudioResponse = await apiRequest('getTts', { text: greetingText, voice: 'voicerss' });
+                await playAudioAndWait(`data:audio/mpeg;base64,${greetingAudioResponse.audioContent}`);
+
+                elements.loadingText.textContent = "Merangkai kata dari resahmu...";
+                const tarotData = await apiRequest('getInterpretation', { name, aspiration });
+                
+                elements.loadingText.textContent = "Memaksa seniman gaib & merekam bisikan...";
+                const [imageResponse, ttsResponse] = await Promise.all([
+                    apiRequest('getImage', { cardName: tarotData.card_name }),
+                    apiRequest('getTts', { text: tarotData.spoken_interpretation, voice: 'gemini' })
+                ]);
+
+                const interpretationAudioUrl = createWavBlobUrl(ttsResponse.audioContent, ttsResponse.mimeType);
+
+                elements.cardName.textContent = tarotData.card_name;
+                elements.prophecyText.textContent = tarotData.written_interpretation;
+                elements.userNameDisplay.textContent = name;
+                elements.aspirationDisplay.textContent = aspiration;
+                elements.cardImage.src = `data:image/png;base64,${imageResponse.imageContent}`;
+
+                await new Promise((resolve) => {
+                    elements.cardImage.onload = resolve;
+                    elements.cardImage.onerror = () => {
+                        console.error("Failed to load generated image, using placeholder.");
+                        elements.cardImage.src = `https://placehold.co/600x400/1A1A2E/F472B6/?text=${encodeURIComponent(tarotData.card_name)}`;
+                        resolve();
+                    };
+                });
+                
+                elements.loadingScreen.classList.add('hidden');
+                elements.resultScreen.classList.remove('hidden');
+                await playAudioAndWait(interpretationAudioUrl);
+
+            } catch (error) {
+                console.error("Terjadi gangguan dalam proses:", error);
+                elements.loadingText.textContent = "Ada gangguan! Coba lagi nanti.";
+                setTimeout(() => {
+                    elements.loadingScreen.classList.add('hidden');
+                    elements.inputScreen.classList.remove('hidden');
+                }, 3000);
+            }
+        }
+
+        function downloadResult() {
+            const dashboard = document.getElementById('shareable-dashboard');
+            html2canvas(dashboard, { 
+                backgroundColor: "#16213E",
+                useCORS: true,
+                scale: 2 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const safeName = (elements.nameInput.value.trim() || 'fana').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                link.download = `sajak_pujangga_${safeName}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error("Gagal mengunduh gambar:", err);
+            });
+        }
+
+        function resetApp() {
+            elements.resultScreen.classList.add('hidden');
+            elements.inputScreen.classList.remove('hidden');
+            elements.nameInput.value = '';
+            elements.aspirationInput.value = '';
+        }
+
+        // --- EVENT LISTENERS ---
+        elements.drawCardBtn.addEventListener('click', handleDrawCard);
+        elements.resetBtn.addEventListener('click', resetApp);
+        elements.downloadBtn.addEventListener('click', downloadResult);
+    });
+    </script>
+</body>
+</html>
+
