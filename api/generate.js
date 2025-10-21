@@ -1,5 +1,4 @@
-// Menggunakan 'import' karena "type": "module" di package.json
-import fetch from 'node-fetch';
+// TIDAK perlu 'import fetch' lagi, karena kita menggunakan fetch bawaan Vercel.
 
 // Fungsi pembantu untuk mengacak array di tempat
 function shuffle(array) {
@@ -11,23 +10,18 @@ function shuffle(array) {
 
 // Fungsi utama yang akan dijalankan oleh Vercel
 export default async function handler(req, res) {
-  // Hanya izinkan metode POST
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
   // --- Membaca Environment Variables dengan lebih aman ---
-  // Menghapus spasi ekstra dari variabel lingkungan
   const geminiKeysString = process.env.GEMINI_API_KEYS || '';
   const voiceRssKey = (process.env.VOICERSS_API_KEY || '').trim();
   
-  // Memisahkan kunci Gemini dan membersihkan masing-masing kunci
   const geminiApiKeys = geminiKeysString.split(',').map(key => key.trim()).filter(key => key);
 
-  // LOGGING: Cek apakah kunci berhasil dimuat
   console.log(`Ditemukan ${geminiApiKeys.length} kunci Gemini.`);
   console.log(`Kunci VoiceRSS ${voiceRssKey ? 'ditemukan' : 'TIDAK ditemukan'}.`);
-
 
   if (geminiApiKeys.length === 0 || !voiceRssKey) {
     console.error("Environment variables tidak diatur dengan benar.");
@@ -35,41 +29,36 @@ export default async function handler(req, res) {
   }
   
   const { type, payload } = req.body;
-
-  // LOGGING: Menampilkan jenis request yang masuk
   console.log(`Menerima permintaan untuk tipe: ${type}`);
 
   try {
     let result;
-    // Mengacak urutan kunci untuk distribusi beban
     shuffle(geminiApiKeys);
 
-    // Fungsi generik untuk mencoba API call dengan rotasi kunci
     const tryApiCall = async (apiFunction) => {
+      let lastError = null;
       for (const key of geminiApiKeys) {
         try {
-          // Mencoba memanggil fungsi API dengan kunci saat ini
           const response = await apiFunction(key);
-          return response; // Jika berhasil, kembalikan respons
+          return response;
         } catch (error) {
-          // LOGGING: Catat error untuk kunci spesifik ini
+          lastError = error;
           console.warn(`Panggilan API gagal dengan kunci yang berakhir pada '...${key.slice(-4)}'. Error: ${error.message}`);
-          // Lanjutkan ke kunci berikutnya
         }
       }
-      // Jika semua kunci gagal, lempar error
-      throw new Error('Semua kunci API Gemini gagal.');
+      throw new Error(`Semua kunci API Gemini gagal. Error terakhir: ${lastError.message}`);
     };
 
     switch (type) {
       case 'text':
         result = await tryApiCall(async (key) => {
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${key}`, {
+          // --- PERUBAHAN: Menggunakan model yang lebih baru dan stabil ---
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-          if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+          if (!response.ok) throw new Error(`API Error ${response.status}: ${response.statusText}`);
           return response.json();
         });
         break;
@@ -81,7 +70,7 @@ export default async function handler(req, res) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-          if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+          if (!response.ok) throw new Error(`API Error ${response.status}: ${response.statusText}`);
           return response.json();
         });
         break;
@@ -93,7 +82,7 @@ export default async function handler(req, res) {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload),
           });
-          if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+          if (!response.ok) throw new Error(`API Error ${response.status}: ${response.statusText}`);
           return response.json();
         });
         break;
@@ -108,13 +97,10 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Tipe permintaan tidak valid' });
     }
 
-    // Mengirim hasil kembali ke frontend
     res.status(200).json(result);
 
   } catch (error) {
-    // LOGGING: Catat error final jika semua usaha gagal
-    console.error('Gagal memproses permintaan setelah mencoba semua kunci:', error);
+    console.error('Gagal memproses permintaan setelah mencoba semua kunci:', error.message);
     res.status(500).json({ error: 'Terjadi gangguan di pihak server.' });
   }
 }
-
